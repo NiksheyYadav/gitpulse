@@ -1,0 +1,207 @@
+// GitPulse data model
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Auth.js (NextAuth) adapter models ----------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  githubLogin   String?   @unique
+
+  accounts      Account[]
+  sessions      Session[]
+  trackedRepos  TrackedRepo[]
+  subscription  Subscription?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ---------- Billing ----------
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  NONE
+}
+
+model Subscription {
+  id                     String             @id @default(cuid())
+  userId                 String             @unique
+  plan                   Plan               @default(FREE)
+  status                 SubscriptionStatus @default(NONE)
+  razorpayCustomerId     String?
+  razorpaySubscriptionId String?
+  currentPeriodEnd       DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------- Repo tracking & GitHub data ----------
+
+model TrackedRepo {
+  id            String   @id @default(cuid())
+  userId        String
+  owner         String
+  name          String
+  githubRepoId  BigInt
+  isPrivate     Boolean  @default(false)
+  defaultBranch String?
+  addedAt       DateTime @default(now())
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  snapshots     RepoSnapshot[]
+  commits       Commit[]
+  pullRequests  PullRequest[]
+  contributors  Contributor[]
+  syncJob       SyncJob?
+
+  @@unique([userId, owner, name])
+  @@index([owner, name])
+}
+
+model RepoSnapshot {
+  id         String   @id @default(cuid())
+  repoId     String
+  date       DateTime
+  stars      Int
+  forks      Int
+  openIssues Int
+  watchers   Int
+
+  repo TrackedRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@unique([repoId, date])
+}
+
+model Commit {
+  id          String   @id @default(cuid())
+  repoId      String
+  sha         String
+  authorLogin String?
+  authorEmail String?
+  message     String   @db.Text
+  committedAt DateTime
+  additions   Int?
+  deletions   Int?
+
+  repo TrackedRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@unique([repoId, sha])
+  @@index([repoId, committedAt])
+}
+
+enum PullRequestState {
+  OPEN
+  CLOSED
+  MERGED
+}
+
+model PullRequest {
+  id                   String            @id @default(cuid())
+  repoId               String
+  number               Int
+  title                String
+  authorLogin          String?
+  state                PullRequestState
+  createdAt            DateTime
+  mergedAt             DateTime?
+  closedAt             DateTime?
+  reviewCommentsCount  Int               @default(0)
+  timeToMergeSeconds   Int?
+
+  repo TrackedRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@unique([repoId, number])
+  @@index([repoId, state])
+}
+
+model Contributor {
+  id           String    @id @default(cuid())
+  repoId       String
+  login        String
+  commitsCount Int       @default(0)
+  additions    Int       @default(0)
+  deletions    Int       @default(0)
+  lastActiveAt DateTime?
+
+  repo TrackedRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@unique([repoId, login])
+}
+
+enum SyncStatus {
+  IDLE
+  RUNNING
+  SUCCESS
+  ERROR
+}
+
+model SyncJob {
+  id           String     @id @default(cuid())
+  repoId       String     @unique
+  lastSyncedAt DateTime?
+  status       SyncStatus @default(IDLE)
+  error        String?    @db.Text
+
+  repo TrackedRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt
+}
