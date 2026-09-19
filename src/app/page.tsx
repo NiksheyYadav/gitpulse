@@ -15,8 +15,6 @@ import {
   CircleDot,
   ArrowRight,
 } from "lucide-react";
-import { bricolage, fraunces, jetbrainsMono } from "@/lib/fonts";
-
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const FEATURES = [
@@ -78,10 +76,7 @@ type PublicRepoSummary = {
 
 export default function Home() {
   return (
-    <div
-      className={`landing-ember relative min-h-screen overflow-x-hidden bg-[var(--ember-canvas)] text-[var(--ember-text)] ${bricolage.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
-      style={{ fontFamily: "var(--font-display), sans-serif" }}
-    >
+    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
       <LandingHeader />
       <Hero />
       <DashboardMockup />

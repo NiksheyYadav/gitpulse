@@ -7,7 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-display), var(--font-geist-sans), system-ui, sans-serif;
+  --font-serif: var(--font-editorial), Georgia, serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -46,75 +47,145 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Named "candlelit terminal" palette — direct utilities like bg-ink-900,
+     text-bone-muted, text-ember, shadow-ember, animate-float */
+  --color-ink: #0a0705;
+  --color-ink-900: #141010;
+  --color-ink-800: #1c1714;
+  --color-ink-700: #241d18;
+  --color-bone: #faf6f1;
+  --color-bone-muted: #9a8b7c;
+  --color-bone-faint: #5c4f44;
+  --color-ember: #ff6b2c;
+  --color-coral: #ff3d6e;
+  --color-gold: #ffb627;
+
+  --shadow-ember: 0 8px 40px -8px rgba(255, 107, 44, 0.65);
+  --shadow-ember-lg: 0 14px 55px -8px rgba(255, 107, 44, 0.85);
+  --shadow-glow: 0 0 0 1px rgba(255, 107, 44, 0.2), 0 8px 40px -8px rgba(255, 107, 44, 0.5);
+  --shadow-elevated: 0 24px 60px -20px rgba(0, 0, 0, 0.9);
+
+  --animate-sunset: sunset 12s ease-in-out infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+@keyframes sunset {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Site-wide "candlelit terminal" theme — replaces the default shadcn
+   light theme everywhere (dashboard, pricing, landing). */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #0a0705;
+  --foreground: #faf6f1;
+  --card: #141010;
+  --card-foreground: #faf6f1;
+  --popover: #141010;
+  --popover-foreground: #faf6f1;
+  --primary: #ff6b2c;
+  --primary-foreground: #1a0d05;
+  --secondary: #1c1714;
+  --secondary-foreground: #faf6f1;
+  --muted: #1c1714;
+  --muted-foreground: #9a8b7c;
+  --accent: #241d18;
+  --accent-foreground: #faf6f1;
+  --destructive: #ff3d6e;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #ff6b2c;
+  --chart-1: #ff6b2c;
+  --chart-2: #ff3d6e;
+  --chart-3: #ffb627;
+  --chart-4: #9a8b7c;
+  --chart-5: #5c4f44;
+  --radius: 0.75rem;
+  --sidebar: #141010;
+  --sidebar-foreground: #faf6f1;
+  --sidebar-primary: #ff6b2c;
+  --sidebar-primary-foreground: #1a0d05;
+  --sidebar-accent: #1c1714;
+  --sidebar-accent-foreground: #faf6f1;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #ff6b2c;
+
+  /* Aliases matching the landing page's original token names */
+  --ember-canvas: var(--color-ink);
+  --ember-surface: var(--color-ink-900);
+  --ember-surface-alt: var(--color-ink-800);
+  --ember-text: var(--color-bone);
+  --ember-muted: var(--color-bone-muted);
+  --ember-faint: var(--color-bone-faint);
+  --ember-accent: var(--color-ember);
+  --ember-coral: var(--color-coral);
+  --ember-gold: var(--color-gold);
+  --ember-border: rgba(255, 255, 255, 0.07);
+  --ember-border-soft: rgba(255, 255, 255, 0.05);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0a0705;
+  --foreground: #faf6f1;
+  --card: #141010;
+  --card-foreground: #faf6f1;
+  --popover: #141010;
+  --popover-foreground: #faf6f1;
+  --primary: #ff6b2c;
+  --primary-foreground: #1a0d05;
+  --secondary: #1c1714;
+  --secondary-foreground: #faf6f1;
+  --muted: #1c1714;
+  --muted-foreground: #9a8b7c;
+  --accent: #241d18;
+  --accent-foreground: #faf6f1;
+  --destructive: #ff3d6e;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #ff6b2c;
+  --chart-1: #ff6b2c;
+  --chart-2: #ff3d6e;
+  --chart-3: #ffb627;
+  --chart-4: #9a8b7c;
+  --chart-5: #5c4f44;
+  --sidebar: #141010;
+  --sidebar-foreground: #faf6f1;
+  --sidebar-primary: #ff6b2c;
+  --sidebar-primary-foreground: #1a0d05;
+  --sidebar-accent: #1c1714;
+  --sidebar-accent-foreground: #faf6f1;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #ff6b2c;
 }
 
 @layer base {
@@ -129,27 +200,10 @@
   }
 }
 
-/* Scoped "candlelit terminal" theme for the marketing landing page only.
-   Kept separate from the shadcn tokens above so /dashboard and /pricing
-   are unaffected. */
-.landing-ember {
-  --ember-canvas: #0a0705;
-  --ember-surface: #141010;
-  --ember-surface-alt: #1c1714;
-  --ember-text: #faf6f1;
-  --ember-muted: #9a8b7c;
-  --ember-faint: #5c4f44;
-  --ember-accent: #ff6b2c;
-  --ember-coral: #ff3d6e;
-  --ember-gold: #ffb627;
-  --ember-border: rgba(255, 255, 255, 0.07);
-  --ember-border-soft: rgba(255, 255, 255, 0.05);
-}
-
-.landing-ember .bg-grid-fade {
+.bg-grid-fade {
   background-image:
-    linear-gradient(var(--ember-border-soft) 1px, transparent 1px),
-    linear-gradient(90deg, var(--ember-border-soft) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 90%);
   -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 90%);
