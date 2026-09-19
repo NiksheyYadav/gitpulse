@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useSession, signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   GitBranch,
@@ -64,6 +65,37 @@ const STATS = [
   { value: "0", label: "Config beyond login" },
 ];
 
+/** Goes straight to the dashboard if signed in, otherwise triggers GitHub OAuth. */
+function AuthCta({
+  className,
+  children,
+  signedInLabel,
+}: {
+  className?: string;
+  children: React.ReactNode;
+  signedInLabel?: React.ReactNode;
+}) {
+  const { data: session } = useSession();
+
+  if (session?.user) {
+    return (
+      <Link href="/dashboard" className={className}>
+        {signedInLabel ?? children}
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+      className={className}
+    >
+      {children}
+    </button>
+  );
+}
+
 type PublicRepoSummary = {
   fullName: string;
   description: string | null;
@@ -108,12 +140,12 @@ function LandingHeader() {
           <Link href="/dashboard" className="text-[var(--ember-muted)] transition-colors hover:text-[var(--ember-text)]">
             Dashboard
           </Link>
-          <Link
-            href="/dashboard"
+          <AuthCta
             className="rounded-full bg-[var(--ember-text)] px-4 py-1.5 text-[13px] font-medium text-[var(--ember-canvas)] transition-transform hover:scale-[1.04]"
+            signedInLabel="Dashboard"
           >
             Sign in
-          </Link>
+          </AuthCta>
         </nav>
       </div>
     </header>
@@ -190,14 +222,10 @@ function Hero() {
         transition={{ duration: 0.7, ease: EASE, delay: 0.36 }}
         className="relative mt-8 flex flex-wrap items-center justify-center gap-4"
       >
-        <Link
-          href="/dashboard"
-          className="group flex items-center gap-1.5 rounded-full bg-[var(--ember-accent)] px-6 py-3 text-[15px] font-medium text-[#1a0d05] transition-transform hover:scale-[1.04] active:scale-[0.98]"
-          style={{ boxShadow: "0 8px 30px -8px rgba(255,107,44,.55)" }}
-        >
+        <AuthCta className="group flex items-center gap-1.5 rounded-full bg-[var(--ember-accent)] px-6 py-3 text-[15px] font-medium text-[#1a0d05] shadow-[0_8px_30px_-8px_rgba(255,107,44,.55)] transition-transform hover:scale-[1.04] active:scale-[0.98]">
           Get started free
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-        </Link>
+        </AuthCta>
         <Link
           href="/pricing"
           className="rounded-full border border-[var(--ember-border)] px-6 py-3 text-[15px] font-medium text-[var(--ember-text)] transition-colors hover:bg-[var(--ember-surface)]"
@@ -552,14 +580,10 @@ function FinalCta() {
           </em>
           .
         </h2>
-        <Link
-          href="/dashboard"
-          className="relative mt-8 inline-flex items-center gap-1.5 rounded-full bg-[var(--ember-accent)] px-7 py-3.5 text-[15px] font-medium text-[#1a0d05] transition-transform hover:scale-[1.04] active:scale-[0.98]"
-          style={{ boxShadow: "0 8px 30px -8px rgba(255,107,44,.55)" }}
-        >
+        <AuthCta className="relative mt-8 inline-flex items-center gap-1.5 rounded-full bg-[var(--ember-accent)] px-7 py-3.5 text-[15px] font-medium text-[#1a0d05] shadow-[0_8px_30px_-8px_rgba(255,107,44,.55)] transition-transform hover:scale-[1.04] active:scale-[0.98]">
           Get started free
           <ArrowRight className="h-4 w-4" />
-        </Link>
+        </AuthCta>
       </motion.div>
     </section>
   );
