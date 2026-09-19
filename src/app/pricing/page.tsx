@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
+import { UpgradeButton } from "@/components/billing/upgrade-button";
 
 const FREE_FEATURES = [
   "2 private repos tracked",
@@ -79,9 +80,7 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <Button className="w-full" disabled>
-                Billing coming soon
-              </Button>
+              <UpgradeButton />
             </CardContent>
           </Card>
 
