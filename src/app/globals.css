@@ -128,3 +128,29 @@
     @apply font-sans;
   }
 }
+
+/* Scoped "candlelit terminal" theme for the marketing landing page only.
+   Kept separate from the shadcn tokens above so /dashboard and /pricing
+   are unaffected. */
+.landing-ember {
+  --ember-canvas: #0a0705;
+  --ember-surface: #141010;
+  --ember-surface-alt: #1c1714;
+  --ember-text: #faf6f1;
+  --ember-muted: #9a8b7c;
+  --ember-faint: #5c4f44;
+  --ember-accent: #ff6b2c;
+  --ember-coral: #ff3d6e;
+  --ember-gold: #ffb627;
+  --ember-border: rgba(255, 255, 255, 0.07);
+  --ember-border-soft: rgba(255, 255, 255, 0.05);
+}
+
+.landing-ember .bg-grid-fade {
+  background-image:
+    linear-gradient(var(--ember-border-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ember-border-soft) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 90%);
+}
